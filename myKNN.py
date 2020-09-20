@@ -194,6 +194,7 @@ plt.show()
 ##BEFORE NORMALIZING DATA
 res = Predictor.predict(Xtest,2) #predict test data
 
+print("DATA SET 1 : Breast Cancer Wisconsin (Diagnostic) Data Set")
 #Accuracy
 print("Accuracy:\n" + str(Predictor.getAccuracy(Ytest,res))+"\n")
 
@@ -224,13 +225,70 @@ print("Confusion Matrix:\n" + str(Predictor.getConfusionMatrix(Ytest,res2))+"\n"
 
 
 #plot the data
-plot_data(6,7,Xall,Yall)
+#plot_data(6,7,Xall,Yall)
 
-# Adding axes annotations
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.title("Knn with K="+ str(2))
+
+
+### Second data set
+Xall2, Yall2 = load_csv("./haberman.data")
+
+#normalize_data(Xall)
+
+
+
+
+Xtrain2,Ytrain2,Xtest2,Ytest2 = split_data(Xall2,Yall2,0.8) # split data 80% train, 20% test
+
+Predictor2 = myKNN(Xtrain2,Ytrain2)
+
+# CHECK optimal K for this data set
+error  = []
+Ks = []
+
+for k in range(1,20):
+    res = Predictor2.predict(Xtest2,k) #predict test data
+
+    #print("Confusion Matrix:\n" + str(Predictor.getConfusionMatrix(Ytest,res))+"\n")
+    error.append(100 - Predictor2.getAccuracy(Ytest2,res))
+    Ks.append(k)
+
+
+plt.plot(Ks, error)
+plt.xlabel('K value')
+plt.ylabel('Error (%)')
+
+plt.title('Test prediciton Error as a function of K')
+
 plt.show()
+
+
+#Find optimal K for this data set
+chosenK = Ks[np.argmin(error)]
+
+res2 = Predictor2.predict(Xtest2,chosenK) #predict test data
+
+print("DATA SET 2 : Haberman's Survival Data Set")
+print("Before Normalization")
+#Accuracy
+print("Accuracy:\n" + str(Predictor.getAccuracy(Ytest2,res2))+"\n")
+
+#Confusion matrix
+print("Confusion Matrix:\n" + str(Predictor.getConfusionMatrix(Ytest2,res2))+"\n")
+
+##After normalizing
+normalize_data(Xtrain2)
+normalize_data(Xtest2)
+
+Predictor.train(Xtrain2,Ytrain2)
+
+res2n = Predictor.predict(Xtest2,chosenK)
+print("After Normalization")
+#Accuracy
+print("Accuracy:\n" + str(Predictor.getAccuracy(Ytest2,res2n))+"\n")
+
+#Confusion matrix
+print("Confusion Matrix:\n" + str(Predictor.getConfusionMatrix(Ytest2,res2n))+"\n")
+
 
 
 
