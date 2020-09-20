@@ -100,7 +100,7 @@ class myKNN:
         return confM
 
 ### Other Methods
-def load_csv(filename):
+def load_csv(filename,val=False):
 	dataset = list()
 	Ylabels = list()
 	forbidden ='?'
@@ -109,9 +109,16 @@ def load_csv(filename):
 		for row in csv_reader:
 		    if not row:
 		        continue
-		    if forbidden not in row: #remove data containing a '?'
+
+		    if forbidden not in row and not val: #for 2nd data set, take all dimension
+		        dataset.append([int(row[i]) for i in range(0,len(row)-1)]) #take all variables
+		        Ylabels.append(int(row[-1])) #the labels
+
+		    if forbidden not in row and val: #remove data containing a '?' for 1st data set
 		        dataset.append([int(row[i]) for i in range(1,len(row)-1)]) #without the labels
 		        Ylabels.append(int(row[-1])) #the labels
+
+
 	return (dataset,Ylabels)
 
 def split_data(X,Y,probability):
@@ -156,7 +163,7 @@ def plot_data(dim1, dim2, X, Y):
     plt.show()
 
 ### First data set
-Xall, Yall = load_csv("./breast-cancer-wisconsin.data")
+Xall, Yall = load_csv("./breast-cancer-wisconsin.data",True)
 
 #normalize_data(Xall)
 
@@ -232,9 +239,6 @@ print("Confusion Matrix:\n" + str(Predictor.getConfusionMatrix(Ytest,res2))+"\n"
 ### Second data set
 Xall2, Yall2 = load_csv("./haberman.data")
 
-#normalize_data(Xall)
-
-
 
 
 Xtrain2,Ytrain2,Xtest2,Ytest2 = split_data(Xall2,Yall2,0.8) # split data 80% train, 20% test
@@ -275,19 +279,22 @@ print("Accuracy:\n" + str(Predictor.getAccuracy(Ytest2,res2))+"\n")
 #Confusion matrix
 print("Confusion Matrix:\n" + str(Predictor.getConfusionMatrix(Ytest2,res2))+"\n")
 
+
 ##After normalizing
 normalize_data(Xtrain2)
 normalize_data(Xtest2)
 
-Predictor.train(Xtrain2,Ytrain2)
+Predictor2.train(Xtrain2,Ytrain2)
 
-res2n = Predictor.predict(Xtest2,chosenK)
+res2n = Predictor2.predict(Xtest2,chosenK)
 print("After Normalization")
 #Accuracy
 print("Accuracy:\n" + str(Predictor.getAccuracy(Ytest2,res2n))+"\n")
 
 #Confusion matrix
 print("Confusion Matrix:\n" + str(Predictor.getConfusionMatrix(Ytest2,res2n))+"\n")
+
+plot_data(0,2,Xall2,Yall2)
 
 
 
